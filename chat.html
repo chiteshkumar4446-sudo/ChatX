@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ChatX - Premium Chats</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="logo-text">ChatX</div>
+    <div class="header-icons">
+      <span class="material-symbols-outlined icon" onclick="document.getElementById('cameraInput').click()">photo_camera</span>
+      <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" style="display:none;" onchange="alert('Camera/Gallery connected!')">
+      
+      <div class="menu-container">
+        <span class="material-symbols-outlined icon" id="menuBtn">more_vert</span>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="menu-item" onclick="alert('New Group feature coming soon!')">New group</div>
+          <div class="menu-item" onclick="window.location.href='settings.html'">Settings</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="search-container">
+    <div class="search-box">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" placeholder="Ask Meta AI or Search">
+    </div>
+  </div>
+
+  <main class="chat-list-container" id="chatListContainer">
+    <div class="loading-state" id="loadingState">
+      <span class="material-symbols-outlined loading-icon">forum</span>
+      <p>Loading your chats...</p>
+    </div>
+    
+    <div id="realChats"></div>
+  </main>
+
+  <div class="fab-container">
+    <button class="fab-btn" onclick="alert('Opening contacts to start a new chat!')">
+      <span class="material-symbols-outlined">maps_ugc</span>
+    </button>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active">
+      <span class="material-symbols-outlined">chat</span>
+      <span class="nav-text">Chats</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='status.html'">
+      <span class="material-symbols-outlined">visibility</span>
+      <span class="nav-text">Status</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='calls.html'">
+      <span class="material-symbols-outlined">call</span>
+      <span class="nav-text">Calls</span>
+    </div>
+  </nav>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script src="chat.js"></script>
+</body>
+</html>

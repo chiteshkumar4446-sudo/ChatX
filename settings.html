@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Settings - ChatX</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* 🌌 CHATX PREMIUM THEME */
+:root {
+  --bg-color: #050a0e;       
+  --card-color: #0d161d;     
+  --cx-blue: #00e5ff;    
+  --text-main: #ffffff;
+  --text-sub: #8696a0;
+  --border-color: #1a252d;
+}
+
+body { margin:0; background: var(--bg-color); font-family: 'Poppins', sans-serif; color:var(--text-main); overflow-x: hidden; }
+
+/* 🔝 HEADERS */
+.header { display:flex; align-items:center; padding:15px; background:var(--card-color); position:sticky; top:0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+.header .icon { font-size:28px; cursor:pointer; margin-right:20px; transition: 0.2s;}
+.header .icon:active { color: var(--cx-blue); }
+.header h2 { margin:0; font-size:20px; font-weight:500; flex:1; }
+
+/* 📱 SCREEN SWITCHING LOGIC */
+.app-screen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:2000; overflow-y:auto; }
+#settingsScreen { display:block; position:relative; z-index:1; height: 100vh; overflow-y:auto;}
+
+/* 👤 PROFILE CARD */
+.profile-card { display:flex; align-items:center; padding:20px 15px; border-bottom:1px solid var(--border-color); cursor:pointer; background: var(--bg-color);}
+.profile-card:active { background: var(--card-color); }
+.profile-card img { width:65px; height:65px; border-radius:50%; margin-right:15px; object-fit:cover; border: 2px solid #222;}
+.profile-info { flex:1; }
+.profile-info h3 { margin:0; font-size:18px; font-weight:500; }
+.profile-info p { margin:3px 0 0 0; font-size:14px; color:var(--text-sub); }
+.profile-actions span { font-size:28px; cursor:pointer; color:var(--cx-blue); margin-left:15px;}
+
+/* ⚙️ SETTINGS LIST */
+.settings-list { padding-top:10px; }
+.setting-item { display:flex; align-items:center; padding:18px 20px; cursor:pointer; transition:0.2s; position:relative; }
+.setting-item:active { background:var(--card-color); }
+.setting-icon { color:var(--text-sub); font-size:24px; margin-right:25px; width:24px; text-align:center; }
+.setting-text { flex:1; }
+.setting-text h4 { margin:0; font-size:16px; font-weight:400; color:var(--text-main); }
+.setting-text p { margin:2px 0 0 0; font-size:13px; color:var(--text-sub); }
+
+/* 🟢 TOGGLES & RADIOS */
+.toggle-switch { position: relative; width: 40px; height: 20px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--cx-blue); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* SECTION DIVIDERS */
+.section-title { padding: 15px 20px 5px 20px; font-size: 13px; color: var(--cx-blue); font-weight: 500; }
+.divider { height: 10px; background: #050a0e; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+
+/* 🔒 PIN MODAL */
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:3000; justify-content:center; align-items:center; }
+.modal-box { background:var(--card-color); padding:25px; border-radius:15px; width:80%; text-align:center; border:1px solid #222; }
+.modal-box input { background:#111; border:1px solid #333; color:var(--cx-blue); font-size:20px; text-align:center; padding:12px; width:85%; border-radius:8px; margin:15px 0; outline:none; letter-spacing: 2px;}
+.modal-btn { background:var(--cx-blue); color:#000; border:none; padding:12px 20px; font-weight:bold; border-radius:5px; cursor:pointer; width:100%; font-size:16px; transition: 0.2s;}
+.modal-btn:active { transform: scale(0.95); }
+
+/* 📸 DP UPLOAD AREA */
+.dp-upload-area { position: relative; display: inline-block; }
+.cam-btn { position:absolute; bottom:5px; right:5px; background:var(--cx-blue); width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:3px solid var(--bg-color); box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition:0.2s; z-index: 10; }
+.cam-btn span { color: #000; }
+.cam-btn:active { transform:scale(0.9); }
+</style>
+</head>
+
+<body>
+
+<div id="settingsScreen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.location.href='chat.html'">arrow_back</span>
+    <h2>Settings</h2>
+    <span class="material-symbols-outlined" style="margin-left:auto; cursor:pointer;">search</span>
+  </div>
+
+  <div class="profile-card" onclick="window.openScreen('profileScreen')">
+    <img id="setAvatar" src="https://ui-avatars.com/api/?name=U&background=00e5ff&color=000&size=200" alt="DP">
+    <div class="profile-info">
+      <h3 id="setName">User</h3>
+      <p id="setAbout">Available</p>
+    </div>
+    <div class="profile-actions">
+      <span class="material-symbols-outlined" onclick="event.stopPropagation(); window.location.href='index.html'">add_circle</span>
+    </div>
+  </div>
+
+  <div class="settings-list">
+    <div class="setting-item" onclick="window.openScreen('accountScreen')">
+      <span class="material-symbols-outlined setting-icon">key</span>
+      <div class="setting-text"><h4>Account</h4><p>Security notifications, change number</p></div>
+    </div>
+    <div class="setting-item" onclick="window.openScreen('privacyScreen')">
+      <span class="material-symbols-outlined setting-icon">lock</span>
+      <div class="setting-text"><h4>Privacy</h4><p>Blocked accounts, disappearing messages</p></div>
+    </div>
+    <div class="setting-item" onclick="window.openScreen('chatsScreen')">
+      <span class="material-symbols-outlined setting-icon">chat</span>
+      <div class="setting-text"><h4>Chats</h4><p>Theme, wallpapers, chat history</p></div>
+    </div>
+    <div class="setting-item" onclick="window.logoutBtn()" style="margin-top: 10px;">
+      <span class="material-symbols-outlined setting-icon" style="color: #f15c6d;">logout</span>
+      <div class="setting-text"><h4 style="color: #f15c6d;">Log out</h4></div>
+    </div>
+  </div>
+</div>
+
+<div id="accountScreen" class="app-screen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.closeScreen('accountScreen')">arrow_back</span>
+    <h2>Account</h2>
+  </div>
+  <div class="settings-list">
+    <div class="setting-item" onclick="alert('Verification link sent!')">
+      <span class="material-symbols-outlined setting-icon">password</span>
+      <div class="setting-text"><h4>Two-step verification</h4></div>
+    </div>
+    <div class="setting-item" onclick="window.location.href='index.html'">
+      <span class="material-symbols-outlined setting-icon">person_add</span>
+      <div class="setting-text"><h4>Add account</h4></div>
+    </div>
+    <div class="setting-item" style="margin-top:20px;" onclick="if(confirm('Deactivate account?')) window.logoutBtn();">
+      <span class="material-symbols-outlined setting-icon" style="color:#f15c6d;">person_off</span>
+      <div class="setting-text"><h4 style="color:#f15c6d;">Deactivate account</h4></div>
+    </div>
+    <div class="setting-item" onclick="if(confirm('Delete account permanently?')) window.logoutBtn();">
+      <span class="material-symbols-outlined setting-icon" style="color:#f15c6d;">delete</span>
+      <div class="setting-text"><h4 style="color:#f15c6d;">Delete account</h4></div>
+    </div>
+  </div>
+</div>
+
+<div id="privacyScreen" class="app-screen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.closeScreen('privacyScreen')">arrow_back</span>
+    <h2>Privacy</h2>
+  </div>
+  <div class="section-title">Who can see my personal info (Tap to change)</div>
+  <div class="settings-list">
+    <div class="setting-item" onclick="window.cycleOption('lastSeenTxt', 'priv_lastseen', ['Nobody', 'My contacts', 'Everyone'])">
+      <div class="setting-text"><h4>Last seen and online</h4><p id="lastSeenTxt">Nobody</p></div>
+    </div>
+    <div class="setting-item" onclick="window.cycleOption('dpPrivTxt', 'priv_dp', ['Everyone', 'My contacts', 'Nobody'])">
+      <div class="setting-text"><h4>Profile picture</h4><p id="dpPrivTxt">Everyone</p></div>
+    </div>
+    <div class="setting-item" onclick="window.cycleOption('aboutPrivTxt', 'priv_about', ['My contacts', 'Everyone', 'Nobody'])">
+      <div class="setting-text"><h4>About</h4><p id="aboutPrivTxt">My contacts</p></div>
+    </div>
+    <div class="setting-item" onclick="window.location.href='status.html'">
+      <div class="setting-text"><h4>Status</h4><p>My contacts</p></div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-text"><h4>Read receipts</h4><p>If turned off, you won't send or receive Read receipts.</p></div>
+      <label class="toggle-switch"><input type="checkbox" id="toggleRead" onchange="window.saveToggle('readReceipts', this.checked)"><span class="slider"></span></label>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="settings-list">
+    <div class="setting-item" onclick="window.openScreen('hiddenChatScreen')">
+      <div class="setting-text">
+        <h4 style="color:var(--cx-blue);">App Lock & Hidden Chats</h4>
+        <p>Set #XXXX# code to hide secret chats</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="hiddenChatScreen" class="app-screen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.closeScreen('hiddenChatScreen')">arrow_back</span>
+    <h2>Hidden Chats</h2>
+  </div>
+  <div class="settings-list">
+    <div class="setting-item">
+      <div class="setting-text">
+        <h4>Enable App Lock</h4>
+        <p>Require PIN to open ChatX</p>
+      </div>
+      <label class="toggle-switch"><input type="checkbox" id="appLockToggle" onchange="window.saveToggle('appLockEnabled', this.checked)"><span class="slider"></span></label>
+    </div>
+    <div class="setting-item" onclick="window.openPinModal()">
+      <span class="material-symbols-outlined setting-icon">dialpad</span>
+      <div class="setting-text">
+        <h4>Set/Change Hidden Code</h4>
+        <p id="currentCodeStatus">Current code: Not Set</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="chatsScreen" class="app-screen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.closeScreen('chatsScreen')">arrow_back</span>
+    <h2>Chats</h2>
+  </div>
+  <div class="section-title">Display (Tap to change)</div>
+  <div class="settings-list">
+    <div class="setting-item" onclick="window.cycleOption('themeTxt', 'chat_theme', ['System default', 'Light', 'Dark'])">
+      <span class="material-symbols-outlined setting-icon">dark_mode</span>
+      <div class="setting-text"><h4>Theme</h4><p id="themeTxt">System default</p></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title">Chat settings</div>
+  <div class="settings-list">
+    <div class="setting-item">
+      <div class="setting-text"><h4>Enter is send</h4><p>Enter key will send your message</p></div>
+      <label class="toggle-switch"><input type="checkbox" id="toggleEnterSend" onchange="window.saveToggle('enterIsSend', this.checked)"><span class="slider"></span></label>
+    </div>
+    <div class="setting-item">
+      <div class="setting-text"><h4>Media visibility</h4><p>Show newly downloaded media in gallery</p></div>
+      <label class="toggle-switch"><input type="checkbox" id="toggleMediaVis" onchange="window.saveToggle('mediaVisibility', this.checked)"><span class="slider"></span></label>
+    </div>
+    <div class="setting-item" onclick="window.cycleOption('fontSizeTxt', 'chat_font', ['Medium', 'Large', 'Small'])">
+      <div class="setting-text"><h4>Font size</h4><p id="fontSizeTxt">Medium</p></div>
+    </div>
+  </div>
+</div>
+
+<div id="profileScreen" class="app-screen">
+  <div class="header">
+    <span class="material-symbols-outlined icon" onclick="window.closeScreen('profileScreen')">arrow_back</span>
+    <h2>Profile</h2>
+  </div>
+  
+  <div style="text-align:center; padding:30px 0;">
+    <div class="dp-upload-area">
+      <img id="proAvatar" src="https://ui-avatars.com/api/?name=U&background=00e5ff&color=000&size=200" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border: 3px solid #222;">
+      
+      <div class="cam-btn" onclick="document.getElementById('dpUploader').click()">
+        <span class="material-symbols-outlined">camera_alt</span>
+      </div>
+      
+      <input type="file" id="dpUploader" accept="image/*" style="display:none;" onchange="window.uploadDP(event)">
+    </div>
+  </div>
+
+  <div class="settings-list" style="padding:0 15px;">
+    <div class="setting-item" style="border-bottom:1px solid #1a252d;" onclick="window.editField('name')">
+      <span class="material-symbols-outlined setting-icon">person</span>
+      <div class="setting-text">
+        <p style="margin:0;">Name</p>
+        <h4 id="proName">User</h4>
+      </div>
+      <span class="material-symbols-outlined" style="color:var(--cx-blue);">edit</span>
+    </div>
+    <div class="setting-item" style="border-bottom:1px solid #1a252d;" onclick="window.editField('about')">
+      <span class="material-symbols-outlined setting-icon">info</span>
+      <div class="setting-text">
+        <p style="margin:0;">About</p>
+        <h4 id="proAbout">Available</h4>
+      </div>
+      <span class="material-symbols-outlined" style="color:var(--cx-blue);">edit</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pinModal">
+  <div class="modal-box">
+    <h3 style="margin-top:0;">Setup Hidden Code</h3>
+    <p style="font-size:13px; color:#888;">Enter a code formatted as <b>#XXXX#</b> (e.g. #0000#) to unlock hidden chats.</p>
+    <input type="text" id="pinInput" placeholder="#0000#">
+    <button class="modal-btn" onclick="window.savePinCode()">Save Code</button>
+    <p onclick="window.closePinModal()" style="color:#888; font-size:13px; margin-top:15px; cursor:pointer;">Cancel</p>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script src="settings.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+/* 🌌 CHATX PREMIUM MIDNIGHT THEME */
+:root {
+  --bg-color: #0b141a;       
+  --card-color: #111b21;     
+  --primary: #00e5ff;    
+  --primary-dark: #00a8cc;
+  --text-main: #e9edef;
+  --text-sub: #8696a0;
+  --input-bg: #182229;
+  --border-color: #1f2c34;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body { background: var(--bg-color); font-family: 'Poppins', sans-serif; color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* 🔝 HEADER & UNIQUE LOGO */
+.top-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-color); z-index: 100; }
+.logo-text { 
+  font-family: 'Righteous', cursive; /* 🔥 NEW UNIQUE FONT */
+  font-size: 30px; 
+  background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1.5px;
+  filter: drop-shadow(0px 2px 4px rgba(0, 229, 255, 0.3));
+}
+.header-icons { display: flex; align-items: center; gap: 20px; }
+.icon { color: var(--text-main); font-size: 26px; cursor: pointer; transition: 0.2s; }
+.icon:active { color: var(--primary); }
+
+/* 🖱️ THREE DOT MENU (SMOOTH DROPDOWN) */
+.menu-container { position: relative; }
+.dropdown-menu { position: absolute; top: 35px; right: 0; background: var(--card-color); border-radius: 12px; width: 160px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 200; overflow: hidden; border: 1px solid var(--border-color);}
+.dropdown-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+.menu-item { padding: 15px 20px; font-size: 15px; color: var(--text-main); font-weight: 400; cursor: pointer; transition: background 0.2s; }
+.menu-item:hover, .menu-item:active { background: var(--input-bg); }
+
+/* 🔍 SEARCH BAR */
+.search-container { padding: 5px 15px 15px 15px; background: var(--bg-color); }
+.search-box { display: flex; align-items: center; background: var(--input-bg); border-radius: 30px; padding: 10px 15px; border: 1px solid transparent; transition: 0.3s;}
+.search-box:focus-within { border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(0,229,255,0.1);}
+.search-icon { color: var(--text-sub); font-size: 22px; margin-right: 10px; }
+.search-box input { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 15px; font-family: 'Poppins', sans-serif; outline: none; }
+.search-box input::placeholder { color: var(--text-sub); }
+
+/* 💬 CHAT LIST */
+.chat-list-container { flex: 1; overflow-y: auto; position: relative; padding-bottom: 80px; }
+
+/* Loading State */
+.loading-state { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; gap: 15px;}
+.loading-icon { font-size: 40px; color: var(--border-color); animation: pulse 1.5s infinite ease-in-out; }
+@keyframes pulse { 0% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); color: var(--primary); } 100% { opacity: 0.3; transform: scale(0.9); } }
+
+/* Real Chat Item Style */
+.chat-item { display: flex; align-items: center; padding: 12px 15px; cursor: pointer; transition: background 0.2s; }
+.chat-item:active { background: var(--card-color); }
+.chat-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 1px solid #222;}
+.chat-details { flex: 1; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display: flex; flex-direction: column; justify-content: center; }
+.chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+.chat-name { font-size: 16px; font-weight: 500; color: var(--text-main); }
+.chat-time { font-size: 12px; color: var(--text-sub); }
+.chat-last-msg { font-size: 14px; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+
+/* Empty State Fallback */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 50px; color: var(--text-sub); animation: fadeIn 0.5s ease;}
+.empty-btn { margin-top: 15px; background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 600; font-family: 'Poppins'; cursor: pointer; }
+
+/* ➕ WHITE FAB */
+.fab-container { position: fixed; bottom: 85px; right: 20px; z-index: 1000; }
+.fab-btn { background: #ffffff; color: #000000; width: 60px; height: 60px; border-radius: 18px; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.2s; }
+.fab-btn:active { transform: scale(0.92); background: #f0f0f0;}
+.fab-btn span { font-size: 28px; }
+
+/* 🔻 BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: var(--bg-color); padding: 10px 0; border-top: 1px solid var(--border-color); z-index: 1000; }
+.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sub); cursor: pointer; transition: 0.2s; width: 30%; }
+.nav-item span.material-symbols-outlined { font-size: 26px; margin-bottom: 4px; padding: 4px 20px; border-radius: 20px; transition: background 0.3s;}
+.nav-text { font-size: 12px; font-weight: 600; font-family: 'Google Sans', sans-serif;}
+.nav-item.active { color: var(--primary); }
+.nav-item.active span.material-symbols-outlined { background: rgba(0, 229, 255, 0.1); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

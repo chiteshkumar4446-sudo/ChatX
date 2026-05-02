@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ChatX - Updates</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="status.css">
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="logo-text">Updates</div>
+    <div class="header-icons">
+      <span class="material-symbols-outlined icon">photo_camera</span>
+      <span class="material-symbols-outlined icon" onclick="toggleSearch()">search</span>
+      
+      <div class="menu-container">
+        <span class="material-symbols-outlined icon" id="menuBtn">more_vert</span>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="menu-item" onclick="alert('Creating Channel...')">Create Channel</div>
+          <div class="menu-item" onclick="window.location.href='settings.html'">Settings</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="search-bar-container" id="searchBar">
+    <div class="search-box">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" placeholder="Search status or channels...">
+      <span class="material-symbols-outlined icon" onclick="toggleSearch()" style="margin-left:10px;">close</span>
+    </div>
+  </div>
+
+  <main class="updates-container">
+    
+    <div class="section-title">Status</div>
+
+    <div class="status-scroll-wrapper">
+      
+      <div class="status-card add-status" onclick="openStatusSheet()">
+        <img id="myAvatar" src="https://ui-avatars.com/api/?name=U&background=111b21&color=fff" alt="Me">
+        <div class="add-icon-overlay"><span class="material-symbols-outlined">add</span></div>
+        <div class="status-label">Add status</div>
+      </div>
+
+      <div class="status-card" onclick="viewStatus('Yogesh Kumar')">
+        <div class="status-bg" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe');"></div>
+        <img src="https://ui-avatars.com/api/?name=Y&background=111b21&color=fff" class="status-dp unread-ring">
+        <div class="status-label">Yogesh Kumar</div>
+      </div>
+
+      <div class="status-card" onclick="viewStatus('Papa Jii')">
+        <div class="status-bg" style="background-image: url('https://images.unsplash.com/photo-1506744626753-dba7d4154a14');"></div>
+        <img src="https://ui-avatars.com/api/?name=P&background=111b21&color=fff" class="status-dp unread-ring">
+        <div class="status-label">Papa Jii</div>
+      </div>
+
+    </div>
+
+    <div class="channels-header">
+      <div class="section-title" style="padding:0;">Channels</div>
+      <button class="explore-btn">Explore</button>
+    </div>
+
+    <div class="channel-list">
+      <div class="channel-item">
+        <img src="logo 2.png" alt="ChatX" onerror="this.src='https://ui-avatars.com/api/?name=CX&background=00e5ff&color=000'">
+        <div class="channel-info">
+          <div class="c-name">ChatX Official <span class="material-symbols-outlined verify-badge">verified</span></div>
+          <div class="c-msg">New premium features unlocked! Check them out now.</div>
+        </div>
+        <div class="c-time">Just now</div>
+      </div>
+
+      <div class="channel-item">
+        <img src="https://ui-avatars.com/api/?name=P&background=111b21&color=fff">
+        <div class="channel-info">
+          <div class="c-name">Polytechnic Wallah</div>
+          <div class="c-msg">🔗 Nishant Sir ka naya Chemistry One Shot upload ho gaya...</div>
+        </div>
+        <div class="c-time">1:51 pm</div>
+        <div class="unread-count">1</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top: 15px; font-size: 13px;">Find channels to follow</div>
+
+    <div class="channel-list">
+      <div class="channel-item">
+        <img src="https://ui-avatars.com/api/?name=M&background=111b21&color=fff">
+        <div class="channel-info">
+          <div class="c-name">Mgsu Bikaner <span class="material-symbols-outlined verify-badge">verified</span></div>
+          <div class="c-time">27K followers</div>
+        </div>
+        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+      </div>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='chat.html'">
+      <span class="material-symbols-outlined">chat</span>
+      <span class="nav-text">Chats</span>
+    </div>
+    <div class="nav-item active">
+      <span class="material-symbols-outlined">data_usage</span>
+      <span class="nav-text">Updates</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='calls.html'">
+      <span class="material-symbols-outlined">call</span>
+      <span class="nav-text">Calls</span>
+    </div>
+  </nav>
+
+  <div class="bottom-sheet-overlay" id="statusSheetOverlay" onclick="closeStatusSheet()"></div>
+  <div class="bottom-sheet" id="statusSheet">
+    <div class="sheet-handle"></div>
+    <h3 style="text-align:center; margin-bottom: 20px;">Add status</h3>
+    
+    <div class="action-grid">
+      <div class="action-item" onclick="alert('Opening Text Status Editor...')">
+        <div class="a-icon"><span class="material-symbols-outlined" style="color:#25d366;">edit</span></div>
+        <span>Text</span>
+      </div>
+      <div class="action-item" onclick="importFromSocial('Instagram')">
+        <div class="a-icon"><span class="material-symbols-outlined" style="color:#E1306C;">link</span></div>
+        <span>Insta Link</span>
+      </div>
+      <div class="action-item" onclick="importFromSocial('Facebook')">
+        <div class="a-icon"><span class="material-symbols-outlined" style="color:#1877F2;">link</span></div>
+        <span>FB Link</span>
+      </div>
+      <div class="action-item" onclick="alert('Layout options...')">
+        <div class="a-icon"><span class="material-symbols-outlined" style="color:#00e5ff;">dashboard</span></div>
+        <span>Layout</span>
+      </div>
+    </div>
+
+    <div class="section-title" style="padding-left:0;">Recents ▾</div>
+    
+    <div class="gallery-grid">
+      <div class="gallery-item camera-item" onclick="alert('Opening Camera...')">
+        <span class="material-symbols-outlined">photo_camera</span>
+        <p>Camera</p>
+      </div>
+      <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1506744626753-dba7d4154a14');"></div>
+      <div class="gallery-item" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe');"></div>
+      <div class="gallery-item" style="background: #111b21;"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script src="status.js"></script>
+</body>
+</html>

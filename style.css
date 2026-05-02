@@ -1,0 +1,73 @@
+/* 🌌 ChatX Google-Style Premium Theme */
+:root {
+  --bg-color: #0b141a;       
+  --card-color: #111b21;     
+  --primary: #00e5ff;    
+  --primary-dark: #00a8cc;
+  --text-main: #e9edef;
+  --text-sub: #8696a0;
+  --input-bg: #182229;
+  --border-color: #222d34;
+  --error: #ef5350;
+}
+
+body { margin:0; background: var(--bg-color); font-family: 'Google Sans', 'Poppins', sans-serif; color:var(--text-main); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+
+/* STEPS LOGIC */
+.step-container { display: none; width: 85%; max-width: 380px; animation: fadeIn 0.4s ease; text-align: center; }
+.active-step { display: flex; flex-direction: column; align-items: center; }
+
+/* WELCOME SCREEN (Clean) */
+.main-logo-w { width: 120px; height: 120px; margin-bottom: 20px;}
+.logo-text { font-family: 'Google Sans', sans-serif; font-size: 28px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; margin-bottom: 25px; }
+.clean-terms-text { color: var(--text-sub); font-size: 14px; margin-bottom: 40px; line-height: 1.6; padding: 0 10px;}
+.link-text { color: var(--primary); cursor: pointer; font-weight: 500; text-decoration: none;}
+
+/* Language Selector */
+.lang-selector { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 30px; color: var(--primary); cursor: pointer;}
+.lang-selector select { background: transparent; border: none; color: var(--primary); font-family: 'Google Sans'; font-size: 14px; font-weight: 500; outline: none; appearance: none;}
+
+/* BUTTONS */
+.main-btn { width: 100%; background: var(--primary); color: #0b141a; font-size: 15px; font-weight: 600; padding: 14px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: 'Google Sans', sans-serif; letter-spacing: 0.5px;}
+.main-btn:disabled { background: var(--border-color); color: var(--text-sub); cursor: not-allowed; }
+.main-btn:active:not(:disabled) { transform: scale(0.98); }
+
+/* AUTH CARD */
+.auth-card { background: var(--card-color); padding: 35px 25px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+
+/* TOGGLE TABS */
+.toggle-box { display: flex; background: var(--input-bg); border-radius: 8px; margin-bottom: 25px; position: relative; padding: 4px; }
+.toggle-btn { flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 500; cursor: pointer; z-index: 2; color: var(--text-sub); transition: 0.3s; }
+.toggle-btn.active { color: #000; font-weight: 600; }
+.toggle-bg { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: var(--primary); border-radius: 6px; z-index: 1; transition: 0.3s ease; }
+
+/* INPUTS */
+.input-group { display: flex; align-items: center; background: var(--input-bg); border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; border: 1px solid var(--border-color); transition: 0.2s; }
+.input-group:focus-within { border-color: var(--primary); }
+.input-icon { color: var(--text-sub); font-size: 22px; margin-right: 12px; }
+.input-group input { border: none; background: transparent; color: var(--text-main); width: 100%; font-size: 15px; outline: none; font-family: 'Poppins', sans-serif; }
+.input-group input::placeholder { color: var(--text-sub); }
+
+.forgot-pass { text-align: right; font-size: 13px; color: var(--primary); margin-bottom: 20px; cursor: pointer; font-weight: 500;}
+
+/* OTP SCREEN */
+.step-title { font-size: 24px; margin: 0 0 5px 0; color: var(--text-main); font-weight: 600;}
+.step-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; }
+.otp-container { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 25px; }
+/* Numeric Keypad style */
+.otp-input { width: 45px; height: 50px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; text-align: center; color: var(--primary); font-size: 24px; font-weight: 600; outline: none; transition: 0.2s;}
+.otp-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,229,255,0.2);}
+
+/* DP SETUP SCREEN */
+.dp-upload-area { position: relative; display: inline-block; margin-bottom: 10px; }
+#previewDP { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; background: var(--input-bg); border: 3px solid #222;}
+.cam-fab { position: absolute; bottom: 0; right: 0; background: var(--primary); width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 3px solid var(--card-color); }
+.cam-fab span { color: #0b141a; font-size: 22px; }
+
+/* MISC */
+.error-text { color: var(--error); font-size: 13px; margin: -5px 0 15px 0; text-align: left; font-weight: 500;}
+.back-link { font-size: 14px; color: var(--text-sub); margin-top: 20px; cursor: pointer; transition: 0.2s;}
+.back-link:hover { color: var(--primary); }
+.hidden { display: none; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

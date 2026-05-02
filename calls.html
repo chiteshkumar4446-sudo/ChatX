@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calls - ChatX</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+
+<style>
+/* 🌌 MIDNIGHT PRO PREMIUM THEME */
+:root {
+  --bg-color: #000000;       
+  --card-color: #0f0f0f;     
+  --cx-blue: #00e5ff;    
+  --cx-green: #25d366;
+  --text-main: #e9edef;
+  --text-sub: #8696a0;
+  --border-color: #1a1a1a;
+  --missed-call: #f15c6d;
+}
+
+body { margin:0; background: var(--bg-color); font-family: 'Poppins', sans-serif; color:var(--text-main); user-select: none; overflow-x: hidden; }
+
+/* 🔝 TOP HEADER */
+.header-row { display:flex; justify-content:space-between; align-items:center; padding:15px; position: sticky; top:0; background: var(--bg-color); z-index: 100; border-bottom: 1px solid var(--border-color);}
+.app-title { font-size: 24px; font-weight: 500; font-family: 'Zen Dots', cursive; color: var(--cx-blue); letter-spacing: 1px; } 
+.header-icons { display:flex; align-items:center; gap:20px; }
+.top-icon { color: var(--text-main); font-size: 26px; cursor: pointer; }
+
+/* 🎛️ TOP 3 ACTIONS */
+.action-buttons { display: flex; justify-content: space-around; padding: 15px 0 20px 0; border-bottom: 1px solid var(--border-color); background: var(--bg-color); }
+.action-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; width: 30%; }
+.action-btn:active .circle { background: #222; }
+.action-btn .circle { background: var(--card-color); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; transition: 0.2s; border: 1px solid #2a3942;}
+.action-btn .circle span { font-size: 26px; color: var(--cx-green); }
+.action-btn p { margin: 0; font-size: 14px; color: var(--text-main); font-weight: 500; }
+
+/* 📞 RECENT CALLS */
+.recent-label { padding: 15px 15px 5px 15px; font-size: 16px; font-weight: 500; color: var(--text-main); }
+.calls-list { padding-bottom: 120px; }
+.call-item { display:flex; align-items:center; padding:12px 15px; cursor: pointer; transition: 0.2s;}
+.call-item:active { background: #111; }
+.call-item img { width:48px; height:48px; border-radius:50%; margin-right:15px; object-fit: cover; border: 1px solid #222;}
+.call-info { flex:1; }
+.call-name { font-weight:500; font-size: 16px; margin-bottom: 2px; color: var(--text-main); }
+.missed-name { color: var(--missed-call); }
+.call-time { display:flex; align-items:center; font-size:14px; color:var(--text-sub); gap:5px;}
+.call-time span { font-size: 16px; }
+
+/* Arrows */
+.incoming { color: var(--missed-call); transform: rotate(45deg); }
+.outgoing { color: var(--cx-green); transform: rotate(-45deg); }
+.call-type-icon { color: var(--text-sub); font-size: 24px; padding: 10px; }
+
+/* 🔻 BOTTOM NAV (CHATX ORIGINAL STYLE) */
+.bottom { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background: var(--card-color); padding:10px 0; border-top: 1px solid var(--border-color); z-index: 1000; }
+.nav-item { text-align:center; color:var(--text-sub); transition: 0.2s; cursor: pointer; }
+.nav-item span { display:block; font-size:26px; margin-bottom: 2px; }
+.nav-text { font-size: 12px; font-weight: 600; }
+.active { color: var(--cx-blue); text-shadow: 0 0 10px rgba(0, 229, 255, 0.4); } /* 🔥 CYYAN GLOW */
+
+/* ➕ FAB BUTTON */
+.fab { position:fixed; bottom:85px; right:20px; width: 60px; height: 60px; background: var(--cx-green); border-radius: 20px; display:flex; align-items:center; justify-content:center; cursor: pointer; z-index: 999; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+.fab span { color: #0b141a; font-size: 28px; font-weight: 600;}
+.fab:active { transform: scale(0.95); }
+
+/* 🔢 KEYPAD MODAL */
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:3000; flex-direction:column; }
+.keypad-header { padding: 15px; display: flex; justify-content: flex-end; }
+.keypad-display { text-align: center; font-size: 36px; padding: 20px; height: 50px; letter-spacing: 2px; color: var(--cx-blue); font-weight: 500;}
+.keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px 40px; }
+.key { background: transparent; color: var(--text-main); font-size: 28px; text-align: center; padding: 15px; border-radius: 50%; cursor: pointer; transition: 0.1s; }
+.key:active { background: #2a3942; }
+.key-sub { display: block; font-size: 10px; color: var(--text-sub); letter-spacing: 1px; margin-top: -5px; }
+.call-btn-area { text-align: center; padding: 20px; display: flex; justify-content: center; align-items: center; gap: 30px;}
+.dial-btn { background: var(--cx-green); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.2);}
+.dial-btn span { color: #0b141a; font-size: 36px; }
+
+/* 📱 CONTACTS MODAL */
+.contacts-call-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-color); z-index:3000; flex-direction:column; overflow-y:auto; }
+.contacts-header { padding:15px; display:flex; align-items:center; gap:20px; background:var(--bg-color); position:sticky; top:0; border-bottom:1px solid var(--border-color);}
+
+/* ============================================== */
+/* 🎥 ULTIMATE CALL SCREEN (COMPACT & SLEEK)      */
+/* ============================================== */
+#callScreen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b141a; z-index: 4000; flex-direction: column; overflow: hidden; }
+
+/* Blurred Background DP */
+#callBg { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; object-fit: cover; filter: blur(35px) brightness(0.25); z-index: 1; }
+
+.call-content { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
+
+/* Top Bar */
+.call-top-bar { width: 100%; padding: 25px 20px; display: flex; justify-content: space-between; align-items: flex-start; box-sizing: border-box; }
+.call-icon-top { font-size: 30px; color: #fff; cursor: pointer; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+.call-header-info { text-align: center; }
+.call-header-info h2 { margin: 0; font-size: 20px; font-weight: 500; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.5);}
+
+/* Center DP & Status */
+.call-dp-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+
+/* Ringing Pulse Animation */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.15); }
+  70% { box-shadow: 0 0 0 40px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+#callingDp { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.1);}
+.ringing-anim { animation: pulse-ring 2s infinite; }
+
+#callStatus { margin-top: 25px; font-size: 18px; color: rgba(255,255,255,0.9); font-weight: 500; letter-spacing: 1px;}
+
+/* 🔥 COMPACT Bottom Control Bar */
+.call-bottom-bar { background: rgba(30, 40, 45, 0.85); padding: 12px 20px; border-radius: 35px; display: flex; gap: 15px; align-items: center; margin-bottom: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05);}
+.cc-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+.cc-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+.cc-btn span { color: #fff; font-size: 22px; }
+.cc-btn-red { background: #f15c6d; }
+.cc-btn-red:active { background: #d04b5a; }
+
+</style>
+</head>
+
+<body>
+
+<div class="header-row">
+  <div class="app-title">ChatX</div>
+  <div class="header-icons">
+    <span class="material-symbols-outlined top-icon">photo_camera</span>
+    <span class="material-symbols-outlined top-icon">search</span>
+    <span class="material-symbols-outlined top-icon">more_vert</span>
+  </div>
+</div>
+
+<div class="action-buttons">
+  <div class="action-btn" onclick="openNewCallModal()">
+    <div class="circle"><span class="material-symbols-outlined">call</span></div>
+    <p>Call</p>
+  </div>
+  <div class="action-btn" onclick="alert('Schedule Call coming soon!')">
+    <div class="circle"><span class="material-symbols-outlined">calendar_month</span></div>
+    <p>Schedule</p>
+  </div>
+  <div class="action-btn" onclick="openKeypad()">
+    <div class="circle"><span class="material-symbols-outlined">dialpad</span></div>
+    <p>Keypad</p>
+  </div>
+</div>
+
+<div class="recent-label">Recent</div>
+<div class="calls-list" id="recentCallsList">
+  
+  <div class="call-item" onclick="startSimulatedCall('1', 'Papa Jii', 'https://ui-avatars.com/api/?name=P&background=0f0f0f&color=fff')">
+    <img src="https://ui-avatars.com/api/?name=P&background=0f0f0f&color=fff">
+    <div class="call-info">
+      <div class="call-name missed-name">Papa Jii</div>
+      <div class="call-time">
+        <span class="material-symbols-outlined incoming">call_received</span> Yesterday, 12:32 pm
+      </div>
+    </div>
+    <span class="material-symbols-outlined call-type-icon">videocam</span>
+  </div>
+
+  <div class="call-item" onclick="startSimulatedCall('2', 'Yogesh Kumar', 'https://ui-avatars.com/api/?name=Y&background=0f0f0f&color=fff')">
+    <img src="https://ui-avatars.com/api/?name=Y&background=0f0f0f&color=fff">
+    <div class="call-info">
+      <div class="call-name">Yogesh Kumar</div>
+      <div class="call-time">
+        <span class="material-symbols-outlined outgoing">call_made</span> Yesterday, 8:30 pm
+      </div>
+    </div>
+    <span class="material-symbols-outlined call-type-icon">call</span>
+  </div>
+
+</div>
+
+<div class="fab" onclick="openNewCallModal()">
+  <span class="material-symbols-outlined">add_call</span>
+</div>
+
+<div class="bottom">
+  <div class="nav-item" onclick="window.location.href='chat.html'">
+    <span class="material-symbols-outlined">chat</span>
+    <div class="nav-text">Chats</div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='status.html'">
+    <span class="material-symbols-outlined">visibility</span>
+    <div class="nav-text">Status</div>
+  </div>
+  <div class="nav-item active">
+    <span class="material-symbols-outlined">call</span>
+    <div class="nav-text">Calls</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="keypadModal">
+  <div class="keypad-header">
+    <span class="material-symbols-outlined" onclick="closeKeypad()" style="font-size:32px; cursor:pointer; color:var(--text-main);">close</span>
+  </div>
+  <div class="keypad-display" id="dialInput"></div>
+  
+  <div class="keypad-grid">
+    <div class="key" onclick="typeNum('1')">1<span class="key-sub"></span></div>
+    <div class="key" onclick="typeNum('2')">2<span class="key-sub">ABC</span></div>
+    <div class="key" onclick="typeNum('3')">3<span class="key-sub">DEF</span></div>
+    <div class="key" onclick="typeNum('4')">4<span class="key-sub">GHI</span></div>
+    <div class="key" onclick="typeNum('5')">5<span class="key-sub">JKL</span></div>
+    <div class="key" onclick="typeNum('6')">6<span class="key-sub">MNO</span></div>
+    <div class="key" onclick="typeNum('7')">7<span class="key-sub">PQRS</span></div>
+    <div class="key" onclick="typeNum('8')">8<span class="key-sub">TUV</span></div>
+    <div class="key" onclick="typeNum('9')">9<span class="key-sub">WXYZ</span></div>
+    <div class="key" onclick="typeNum('*')">*</div>
+    <div class="key" onclick="typeNum('0')">0<span class="key-sub">+</span></div>
+    <div class="key" onclick="typeNum('#')">#</div>
+  </div>
+  
+  <div class="call-btn-area">
+    <div style="width:30px;"></div>
+    <div class="dial-btn" onclick="makeCallFromKeypad()">
+      <span class="material-symbols-outlined">call</span>
+    </div>
+    <span class="material-symbols-outlined" onclick="backspace()" style="font-size:32px; cursor:pointer; color:var(--text-sub);">backspace</span>
+  </div>
+</div>
+
+<div class="contacts-call-modal" id="contactsCallModal">
+  <div class="contacts-header">
+    <span class="material-symbols-outlined" onclick="closeNewCallModal()" style="cursor:pointer; font-size:28px;">arrow_back</span>
+    <h3 style="margin:0; font-size:18px; font-weight:500;">Select contact</h3>
+  </div>
+  <div id="callContactsList" style="padding-top:10px;">
+    <p style="text-align:center; color:#888;">Fetching contacts from Firebase...</p>
+  </div>
+</div>
+
+<div id="callScreen">
+  <img id="callBg" src=""> 
+  
+  <div class="call-content">
+    
+    <div class="call-top-bar">
+      <span class="material-symbols-outlined call-icon-top" onclick="endCall()">close_fullscreen</span>
+      
+      <div class="call-header-info">
+        <h2 id="callingName">User</h2>
+      </div>
+      
+      <span class="material-symbols-outlined call-icon-top">person_add</span>
+    </div>
+
+    <div class="call-dp-area">
+      <img id="callingDp" class="ringing-anim" src="">
+      <p id="callStatus">Ringing...</p>
+    </div>
+
+    <div class="call-bottom-bar">
+      <div class="cc-btn"><span class="material-symbols-outlined">more_horiz</span></div>
+      <div class="cc-btn"><span class="material-symbols-outlined">videocam</span></div>
+      <div class="cc-btn"><span class="material-symbols-outlined">volume_up</span></div>
+      <div class="cc-btn"><span class="material-symbols-outlined">mic_off</span></div>
+      <div class="cc-btn cc-btn-red" onclick="endCall()"><span class="material-symbols-outlined" style="transform: rotate(135deg);">call</span></div>
+    </div>
+    
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+// 1. FIREBASE SETUP
+const firebaseConfig = {
+    apiKey: "AIzaSyBnHy2tW0bgV43RmkdW-72wTlQ-PNU04fM",
+    authDomain: "chatx-259e7.firebaseapp.com",
+    projectId: "chatx-259e7"
+};
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+const db = firebase.firestore();
+
+// 2. KEYPAD & SECRET VAULT LOGIC
+let dialText = "";
+function openKeypad() { document.getElementById("keypadModal").style.display = "flex"; }
+function closeKeypad() { document.getElementById("keypadModal").style.display = "none"; dialText = ""; document.getElementById("dialInput").innerText = ""; }
+
+function typeNum(num) {
+    dialText += num;
+    document.getElementById("dialInput").innerText = dialText;
+    checkSecretCode(); 
+}
+
+function backspace() {
+    dialText = dialText.slice(0, -1);
+    document.getElementById("dialInput").innerText = dialText;
+}
+
+function checkSecretCode() {
+    let savedPin = localStorage.getItem("chatx_hidden_pin");
+    if (savedPin && dialText === savedPin) {
+        setTimeout(() => {
+            alert("🔒 HIDDEN VAULT UNLOCKED!\n\n(Yahan hum ekdum secure hidden chats open karenge)");
+            closeKeypad();
+        }, 100);
+    }
+}
+
+function makeCallFromKeypad() {
+    if(dialText === "") return;
+    startSimulatedCall('unknown', dialText, "https://ui-avatars.com/api/?name=U&background=0b141a&color=fff");
+    closeKeypad();
+}
+
+// 3. FETCH CONTACTS
+function openNewCallModal() {
+    document.getElementById("contactsCallModal").style.display = "flex";
+    const usersList = document.getElementById("callContactsList");
+    
+    let currentUser;
+    try { currentUser = JSON.parse(localStorage.getItem("currentUser")); } catch(e){}
+
+    db.collection("users").get().then((querySnapshot) => {
+        usersList.innerHTML = ""; 
+        querySnapshot.forEach((doc) => {
+            let userData = doc.data();
+            if (currentUser && userData.email !== currentUser.email) {
+                let name = userData.name || userData.email.split('@')[0];
+                let dp = userData.dp || `https://ui-avatars.com/api/?name=${name.charAt(0)}&background=00a884&color=fff&size=150`;
+                
+                usersList.innerHTML += `
+                    <div class="call-item" style="justify-content:space-between; border-bottom:none;">
+                        <div style="display:flex; align-items:center;" onclick="startSimulatedCall('${doc.id}', '${name}', '${dp}')">
+                            <img src="${dp}">
+                            <div class="call-name">${name}</div>
+                        </div>
+                        <div style="display:flex; gap:20px;">
+                            <span class="material-symbols-outlined" style="font-size:26px; cursor:pointer; color:var(--text-main);" onclick="startSimulatedCall('${doc.id}', '${name}', '${dp}')">call</span>
+                            <span class="material-symbols-outlined" style="font-size:26px; cursor:pointer; color:var(--text-main);" onclick="startSimulatedCall('${doc.id}', '${name}', '${dp}')">videocam</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    });
+}
+function closeNewCallModal() { document.getElementById("contactsCallModal").style.display = "none"; }
+
+// 4. SIMULATED PRO CALL SCREEN
+let callTimer;
+function startSimulatedCall(id, name, dp) {
+    document.getElementById("contactsCallModal").style.display = "none";
+    document.getElementById("callScreen").style.display = "flex";
+    
+    // Set Names and DP
+    document.getElementById("callingName").innerText = name;
+    document.getElementById("callingDp").src = dp;
+    
+    // Set Background Image
+    document.getElementById("callBg").src = dp;
+    
+    // Reset Status and Animation
+    document.getElementById("callingDp").classList.add("ringing-anim");
+    document.getElementById("callStatus").innerText = "Ringing...";
+    
+    // Simulate Pickup
+    callTimer = setTimeout(() => {
+        if(document.getElementById("callScreen").style.display === "flex") {
+            document.getElementById("callingDp").classList.remove("ringing-anim");
+            document.getElementById("callStatus").innerText = "00:01";
+        }
+    }, 3500);
+}
+
+function endCall() {
+    clearTimeout(callTimer);
+    document.getElementById("callingDp").classList.remove("ringing-anim");
+    document.getElementById("callScreen").style.display = "none";
+}
+</script>
+
+</body>
+</html>

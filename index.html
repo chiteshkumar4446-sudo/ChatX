@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ChatX - Premium Secure Messaging</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="welcomeStep" class="step-container active-step">
+  <img src="logo 2.png" alt="ChatX Logo" class="main-logo-w">
+  <div class="logo-text">Welcome to ChatX</div>
+  
+  <p class="clean-terms-text">
+    Read our <span class="link-text">Privacy Policy</span>. Tap "Agree and continue" to accept the <span class="link-text">Terms of Service</span>.
+  </p>
+
+  <button class="main-btn" onclick="showStep('authStep')">AGREE AND CONTINUE</button>
+
+  <div class="lang-selector">
+    <span class="material-symbols-outlined" style="font-size: 18px;">language</span>
+    <select id="langSelector">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी (Hindi)</option>
+    </select>
+  </div>
+</div>
+
+<div id="authStep" class="step-container auth-card">
+  
+  <div class="toggle-box">
+    <div class="toggle-bg" id="toggleBg"></div>
+    <div class="toggle-btn active" id="loginTab" onclick="switchTab('login')">Login</div>
+    <div class="toggle-btn" id="signupTab" onclick="switchTab('signup')">Sign Up</div>
+  </div>
+
+  <div id="loginForm">
+    <div class="input-group">
+      <span class="material-symbols-outlined input-icon">mail</span>
+      <input type="email" id="logEmail" placeholder="Email address">
+    </div>
+    <div class="input-group">
+      <span class="material-symbols-outlined input-icon">lock</span>
+      <input type="password" id="logPass" placeholder="Password">
+    </div>
+    
+    <div class="forgot-pass" onclick="forgotPassword()">Forgot Password?</div>
+    
+    <button class="main-btn" id="loginBtn" onclick="loginUser()">Secure Login</button>
+  </div>
+
+  <div id="signupForm" style="display: none;">
+    <div class="input-group">
+      <span class="material-symbols-outlined input-icon">mail</span>
+      <input type="email" id="signEmail" placeholder="Gmail address (@gmail.com)">
+    </div>
+    <div class="input-group">
+      <span class="material-symbols-outlined input-icon">lock</span>
+      <input type="password" id="signPass" placeholder="Create Password (Min 6)">
+    </div>
+    <div class="input-group">
+      <span class="material-symbols-outlined input-icon">lock_reset</span>
+      <input type="password" id="signConfirmPass" placeholder="Confirm Password">
+    </div>
+    
+    <p id="userExistsMsg" class="error-text hidden">Account already exists! <span onclick="switchTab('login')" class="link-text">Login Here.</span></p>
+
+    <button class="main-btn" id="sendOtpBtn" onclick="requestRealOTP()">Next</button>
+  </div>
+</div>
+
+<div id="otpStep" class="step-container auth-card">
+  <h2 class="step-title">Verify Code</h2>
+  <p class="step-desc">Enter the 6-digit code sent to your email.</p>
+  
+  <div class="otp-container">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" onkeyup="moveNext(this, 'otp2', event)">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" id="otp2" onkeyup="moveNext(this, 'otp3', event)">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" id="otp3" onkeyup="moveNext(this, 'otp4', event)">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" id="otp4" onkeyup="moveNext(this, 'otp5', event)">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" id="otp5" onkeyup="moveNext(this, 'otp6', event)">
+    <input type="tel" inputmode="numeric" maxlength="1" class="otp-input" id="otp6" onkeyup="moveNext(this, null, event)">
+  </div>
+
+  <button class="main-btn" onclick="verifyOTP()">Verify Code</button>
+  <p class="back-link" onclick="showStep('authStep')">Back</p>
+</div>
+
+<div id="profileStep" class="step-container auth-card">
+  <h2 class="step-title">Profile Info</h2>
+  <p class="step-desc">Please provide your name and an optional photo.</p>
+
+  <div class="dp-upload-area">
+    <img id="previewDP" src="https://ui-avatars.com/api/?name=U&background=00e5ff&color=000&size=150">
+    <div class="cam-fab" onclick="document.getElementById('dpInput').click()">
+      <span class="material-symbols-outlined">add_a_photo</span>
+    </div>
+    <input type="file" id="dpInput" accept="image/*" style="display:none;" onchange="handleDP(event)">
+  </div>
+
+  <div class="input-group" style="margin-top: 20px;">
+    <span class="material-symbols-outlined input-icon">person</span>
+    <input type="text" id="finalName" placeholder="Type your name here">
+  </div>
+
+  <button class="main-btn" id="createAccBtn" onclick="createFinalAccount()">Complete Setup</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script src="script.js"></script>
+</body>
+</html>

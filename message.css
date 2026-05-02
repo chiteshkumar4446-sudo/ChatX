@@ -1,0 +1,63 @@
+/* 🌌 CHATX PREMIUM MIDNIGHT THEME */
+:root {
+  --bg-color: #0b141a;       
+  --card-color: #111b21;     
+  --primary: #00e5ff;    
+  --primary-dark: #00a8cc;
+  --text-main: #e9edef;
+  --text-sub: #8696a0;
+  --input-bg: #1f2c34;
+  --border-color: #1f2c34;
+  --msg-sent: #005c4b; /* Deep green/cyan for sent */
+  --msg-received: #202c33; /* Dark grey for received */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg-color); font-family: 'Poppins', sans-serif; color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* 🔝 HEADER */
+.chat-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--card-color); z-index: 100; border-bottom: 1px solid var(--border-color); }
+.header-left { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.back-btn { font-size: 24px; padding: 5px; margin-left: -5px; border-radius: 50px; transition: 0.2s;}
+.back-btn:active { background: var(--input-bg); }
+#chatUserDp { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #333;}
+.user-info { display: flex; flex-direction: column; }
+.user-info h2 { font-size: 16px; font-weight: 500; font-family: 'Google Sans'; margin: 0; color: var(--text-main); line-height: 1.2;}
+.user-info p { font-size: 12px; color: var(--text-sub); margin: 0; }
+
+.header-right { display: flex; align-items: center; gap: 18px; }
+.icon { color: var(--text-main); font-size: 24px; cursor: pointer; transition: 0.2s; }
+.icon:active { opacity: 0.6; }
+
+/* 💬 CHAT AREA */
+.chat-area { flex: 1; padding: 15px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; background-blend-mode: overlay; background-color: rgba(11, 20, 26, 0.95); display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth;}
+
+.encryption-msg { background: rgba(31, 44, 52, 0.8); color: #ffd54f; font-size: 11.5px; text-align: center; padding: 8px 15px; border-radius: 10px; margin: 10px auto 20px auto; max-width: 90%; display: flex; flex-direction: column; align-items: center; gap: 5px; backdrop-filter: blur(5px);}
+.encryption-msg span { font-size: 14px; }
+
+#messagesContainer { display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px;}
+
+/* BUBBLES */
+.message-bubble { max-width: 75%; padding: 8px 12px; font-size: 14.5px; position: relative; word-wrap: break-word; animation: popIn 0.3s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3);}
+.sent { align-self: flex-end; background: var(--msg-sent); color: #e9edef; border-radius: 12px 0px 12px 12px; }
+.received { align-self: flex-start; background: var(--msg-received); color: #e9edef; border-radius: 0px 12px 12px 12px; }
+
+.msg-time { font-size: 10px; color: rgba(255,255,255,0.6); float: right; margin-top: 5px; margin-left: 10px; display: flex; align-items: center; gap: 3px;}
+.tick { font-size: 14px; color: #53bdeb; } /* Blue tick color */
+
+/* ⌨️ INPUT AREA */
+.input-area { display: flex; align-items: flex-end; padding: 10px; background: var(--bg-color); gap: 10px; }
+.input-wrapper { flex: 1; background: var(--input-bg); border-radius: 25px; display: flex; align-items: center; padding: 8px 15px; min-height: 45px; }
+.input-wrapper input { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 16px; font-family: 'Poppins'; outline: none; padding: 0 10px; }
+.input-wrapper input::placeholder { color: var(--text-sub); }
+.input-wrapper .icon { color: var(--text-sub); font-size: 24px; padding: 0 5px;}
+
+.send-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+.send-btn span { color: #0b141a; font-size: 24px; transition: 0.2s;}
+.send-btn:active { transform: scale(0.9); }
+
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+/* Scrollbar Hide */
+.chat-area::-webkit-scrollbar { width: 4px; }
+.chat-area::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }

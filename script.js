@@ -270,5 +270,4 @@ async function loginUser() {
 
 function forgotPassword() {
     alert("⚠️ Please create a new account or contact Admin.");
-        }
-            
+    }

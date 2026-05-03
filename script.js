@@ -1,255 +1,274 @@
 // ==========================================
-// 1. FIREBASE & EMAILJS CONFIGURATION
+// 1. FIREBASE CONFIGURATION
 // ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyBnHy2tW0bgV43RmkdW-72wTlQ-PNU04fM",
     authDomain: "chatx-259e7.firebaseapp.com",
     projectId: "chatx-259e7"
 };
+
 if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// 📧 EMAILJS KEY
-(function(){
-    // TERA PUBLIC KEY
-    emailjs.init("2QYepLZ5c1lFeqUHP"); 
-})();
+let confirmationResultObj = null; 
+let tempUser = { phone: "", pass: "", dp: "" };
+let resendTimerInterval;
 
-// ALREADY LOGGED IN CHECK 
 window.onload = function() {
-    if(localStorage.getItem("currentUser")) {
-        window.location.replace("chat.html"); 
+    if(localStorage.getItem("currentUser")) { window.location.replace("chat.html"); }
+    changeLanguage(document.getElementById('langSelector').value || 'en');
+}
+
+// ==========================================
+// 2. FULL LANGUAGE ENGINE 
+// ==========================================
+const langData = {
+    en: {
+        t_welcome: "Welcome to ChatX", t_agree: "AGREE AND CONTINUE",
+        t_forgot: "Forgot Password?", t_verifyTitle: "Verify Code",
+        logPhone: "Phone Number", logPass: "Password", signPhone: "Phone Number"
+    },
+    hi: {
+        t_welcome: "ChatX में आपका स्वागत है", t_agree: "सहमत हैं और आगे बढ़ें",
+        t_forgot: "पासवर्ड भूल गए?", t_verifyTitle: "OTP सत्यापित करें",
+        logPhone: "फ़ोन नंबर दर्ज करें", logPass: "पासवर्ड दर्ज करें", signPhone: "फ़ोन नंबर दर्ज करें"
     }
+};
+
+function changeLanguage(lang) {
+    const d = langData[lang];
+    if(document.getElementById('t_welcome')) document.getElementById('t_welcome').innerText = d.t_welcome;
+    if(document.getElementById('t_agree')) document.getElementById('t_agree').innerText = d.t_agree;
+    if(document.getElementById('t_forgot')) document.getElementById('t_forgot').innerText = d.t_forgot;
+    if(document.getElementById('t_verifyTitle')) document.getElementById('t_verifyTitle').innerText = d.t_verifyTitle;
+    if(document.getElementById('logPhone')) document.getElementById('logPhone').placeholder = d.logPhone;
+    if(document.getElementById('logPass')) document.getElementById('logPass').placeholder = d.logPass;
+    if(document.getElementById('signPhone')) document.getElementById('signPhone').placeholder = d.signPhone;
 }
 
 // ==========================================
-// 2. SCROLL TERMS LOGIC
+// 3. UI NAVIGATION & TOGGLES
 // ==========================================
-function checkScroll() {
-    let box = document.getElementById("termsBox");
-    let checkbox = document.getElementById("termsCheck");
-    let label = document.getElementById("termsLabel");
-
-    if (Math.ceil(box.scrollTop + box.clientHeight) >= box.scrollHeight - 5) {
-        checkbox.disabled = false; 
-        label.style.opacity = "1"; 
-    }
-}
-
-function toggleAgreeBtn() { 
-    document.getElementById("agreeBtn").disabled = !document.getElementById("termsCheck").checked; 
-}
-
-// ==========================================
-// 3. UI CONTROLS
-// ==========================================
-function showStep(stepId) {
-    document.querySelectorAll('.step-container').forEach(el => {
-        el.classList.remove('active-step');
-        el.style.display = 'none';
-    });
-    let target = document.getElementById(stepId);
-    target.style.display = 'block';
-    target.classList.add('active-step');
+function showStep(id) {
+    document.querySelectorAll('.step-container').forEach(s => s.style.display = 'none');
+    document.getElementById(id).style.display = id === 'welcomeStep' ? 'flex' : 'block';
+    document.getElementById(id).classList.add('active-step');
 }
 
 function switchTab(tab) {
-    let bg = document.getElementById("toggleBg");
-    document.getElementById("userExistsMsg").classList.add("hidden");
-
+    const bg = document.getElementById("toggleBg");
     if(tab === 'login') {
         bg.style.left = "4px";
-        document.getElementById("loginTab").classList.add("active"); 
-        document.getElementById("signupTab").classList.remove("active");
-        document.getElementById("loginForm").style.display = "block"; 
+        document.getElementById("loginForm").style.display = "block";
         document.getElementById("signupForm").style.display = "none";
+        document.getElementById("loginTab").classList.add("active");
+        document.getElementById("signupTab").classList.remove("active");
     } else {
-        bg.style.left = "calc(50% - 2px)";
-        document.getElementById("signupTab").classList.add("active"); 
-        document.getElementById("loginTab").classList.remove("active");
-        document.getElementById("signupForm").style.display = "block"; 
+        bg.style.left = "calc(50% - 4px)";
+        document.getElementById("signupForm").style.display = "block";
         document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupTab").classList.add("active");
+        document.getElementById("loginTab").classList.remove("active");
     }
 }
 
-function moveNext(current, nextId) {
-    current.value = current.value.replace(/[^0-9]/g, '');
-    if (current.value.length === 1 && nextId) { document.getElementById(nextId).focus(); }
+function togglePass(id) {
+    const x = document.getElementById(id);
+    x.type = x.type === "password" ? "text" : "password";
 }
 
 // ==========================================
-// 4. SIGNUP FLOW & REAL OTP VIA EMAILJS
+// 4. 📲 INSTANT FIREBASE OTP SEND
 // ==========================================
-let tempUser = { email: "", pass: "", generatedOtp: null, dpBase64: "" };
-
 async function requestRealOTP() {
-    let email = document.getElementById("signEmail").value.trim().toLowerCase();
-    let pass = document.getElementById("signPass").value;
-    let confPass = document.getElementById("signConfirmPass").value;
-    let errorMsg = document.getElementById("userExistsMsg");
-    let nextBtn = document.getElementById("sendOtpBtn");
+    const phone = document.getElementById("signPhone").value.trim();
+    const pass = document.getElementById("signPass").value;
+    const cPass = document.getElementById("signConfirmPass").value;
+    const sendBtn = document.getElementById("sendOtpBtn");
 
-    errorMsg.classList.add("hidden");
+    if(!/^\d{10}$/.test(phone)) return alert("❌ Enter exactly 10-digit number!");
+    if(pass.length < 6) return alert("❌ Password must be at least 6 characters!");
+    if(pass !== cPass) return alert("❌ Passwords do not match!");
 
-    if(email === "" || pass === "" || confPass === "") return alert("Please fill all details!");
-    if(!email.endsWith("@gmail.com")) return alert("Only @gmail.com addresses are allowed!");
-    if(pass.length < 6) return alert("Password must be at least 6 characters.");
-    if(pass !== confPass) return alert("Passwords do not match!");
-
-    nextBtn.innerText = "Checking...";
-    nextBtn.disabled = true;
+    sendBtn.innerText = "Sending SMS...";
+    sendBtn.disabled = true;
 
     try {
-        // 🔥 SAFE ACCOUNT EXIST CHECK VIA FIRESTORE
-        const userSnapshot = await db.collection("users").where("email", "==", email).get();
-        if (!userSnapshot.empty) {
-            nextBtn.innerText = "Next";
-            nextBtn.disabled = false;
-            errorMsg.classList.remove("hidden"); // Shows "Login Please"
-            return; 
+        // DB check for existing user
+        const userSnap = await db.collection("users").where("phone", "==", phone).get();
+        if (!userSnap.empty) {
+            sendBtn.innerText = "Next"; sendBtn.disabled = false;
+            return alert("⚠️ Account already exists! Please Login."); 
         }
+    } catch(e) {
+        console.warn("DB Rule issue, bypassing for OTP...");
+    }
 
-        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        tempUser.email = email;
-        tempUser.pass = pass;
-        tempUser.generatedOtp = otpCode;
-
-        const templateParams = { to_email: email, otp: otpCode };
-
-        // SEND OTP VIA EMAILJS
-        emailjs.send('service_vbefeob', 'template_0g9gu9b', templateParams)
-        .then(() => {
-            nextBtn.innerText = "Next";
-            nextBtn.disabled = false;
-            alert(`✅ Code securely sent to ${email}.`);
-            showStep('otpStep');
-        }, (error) => {
-            nextBtn.innerText = "Next";
-            nextBtn.disabled = false;
-            console.error('EmailJS Error:', error);
-            alert(`EmailJS Error: Please check your EmailJS dashboard limits.\n(Demo bypass code: ${otpCode})`);
-            showStep('otpStep'); 
+    // FIREBASE RECAPTCHA INITIALIZATION
+    if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            'size': 'invisible'
         });
-
-    } catch (error) {
-        nextBtn.innerText = "Next";
-        nextBtn.disabled = false;
-        console.error("Check Error:", error);
     }
+
+    const formattedPhone = "+91" + phone;
+
+    auth.signInWithPhoneNumber(formattedPhone, window.recaptchaVerifier)
+        .then((confirmationResult) => {
+            window.confirmationResultObj = confirmationResult;
+            tempUser.phone = phone; 
+            tempUser.pass = pass;
+            
+            showStep('otpStep');
+            startResendTimer(); // Resend timer shuru
+            
+            sendBtn.innerText = "Next"; 
+            sendBtn.disabled = false;
+        })
+        .catch((error) => {
+            console.error("Firebase OTP Error:", error);
+            alert("❌ Could not send SMS: " + error.message);
+            sendBtn.innerText = "Next"; 
+            sendBtn.disabled = false;
+            
+            // Error ke baad recaptcha reset karna zaruri hai
+            if (window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            }
+        });
 }
 
-function verifyOTP() {
-    let enteredOtp = "";
-    document.querySelectorAll(".otp-input").forEach(input => enteredOtp += input.value);
+// 🔄 RESEND OTP LOGIC
+function startResendTimer() {
+    let timeLeft = 30; // 30 seconds wait
+    let timerEl = document.getElementById("resendTimerText");
     
-    if(enteredOtp === tempUser.generatedOtp) { 
-        showStep('profileStep'); 
-    } else {
-        alert("❌ Invalid Verification Code!");
+    if(!timerEl) {
+        timerEl = document.createElement("p");
+        timerEl.id = "resendTimerText";
+        timerEl.style = "color: #00e5ff; font-size: 13px; margin-top: 20px; cursor: pointer; text-align: center; font-weight: 500;";
+        document.querySelector('.otp-container').after(timerEl);
     }
-}
+    
+    timerEl.onclick = null;
+    timerEl.style.cursor = "default";
+    timerEl.innerText = `Wait ${timeLeft}s to resend`;
 
-function handleDP(event) {
-    let file = event.target.files[0];
-    if(!file) return;
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let img = new Image();
-        img.onload = function() {
-            let canvas = document.createElement('canvas');
-            canvas.width = 300; canvas.height = 300;
-            let ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, 300, 300);
-            tempUser.dpBase64 = canvas.toDataURL('image/jpeg', 0.8);
-            document.getElementById("previewDP").src = tempUser.dpBase64;
+    clearInterval(resendTimerInterval);
+    resendTimerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = `Wait ${timeLeft}s to resend`;
+        
+        if(timeLeft <= 0) {
+            clearInterval(resendTimerInterval);
+            timerEl.innerText = "🔄 Resend OTP Now";
+            timerEl.style.cursor = "pointer";
+            timerEl.onclick = () => {
+                timerEl.innerText = "Sending...";
+                timerEl.onclick = null;
+                
+                // Resend OTP logic
+                const formattedPhone = "+91" + tempUser.phone;
+                auth.signInWithPhoneNumber(formattedPhone, window.recaptchaVerifier)
+                    .then((result) => {
+                        window.confirmationResultObj = result;
+                        startResendTimer(); // Reset timer
+                    })
+                    .catch((err) => {
+                        alert("Resend failed: " + err.message);
+                        timerEl.innerText = "🔄 Resend OTP Now";
+                    });
+            };
         }
-        img.src = e.target.result;
-    }
-    reader.readAsDataURL(file);
+    }, 1000);
 }
 
 // ==========================================
-// 5. 🔥 FAST ACCOUNT CREATION & LOGIN (FIXED)
+// 5. ✅ VERIFY FIREBASE OTP
 // ==========================================
-async function createFinalAccount() {
-    let name = document.getElementById("finalName").value.trim();
-    if(name === "") return alert("Please enter your name!");
+function verifyOTP() {
+    let code = "";
+    document.querySelectorAll(".otp-input").forEach(i => code += i.value);
+    
+    if(code.length === 6 && window.confirmationResultObj) {
+        let btn = document.getElementById("t_verifyBtn");
+        btn.innerText = "Verifying..."; btn.disabled = true;
 
-    let btn = document.getElementById("createAccBtn");
-    btn.innerText = "Connecting...";
-    btn.disabled = true;
+        window.confirmationResultObj.confirm(code).then((result) => {
+            btn.innerText = "Verify Code"; btn.disabled = false;
+            showStep('profileStep'); 
+        }).catch((error) => {
+            btn.innerText = "Verify Code"; btn.disabled = false;
+            alert("❌ Incorrect OTP Code!");
+        });
+    } else {
+        alert("❌ Please enter 6 digit OTP!");
+    }
+}
+
+function moveNext(c, n, e) {
+    c.value = c.value.replace(/[^0-9]/g, '');
+    if(c.value && n) document.getElementById(n).focus();
+    if(e.key === "Backspace" && !c.value) c.previousElementSibling?.focus();
+}
+
+// ==========================================
+// 6. 🔥 INSTANT ACCOUNT CREATION & LOGIN
+// ==========================================
+function handleDP(e) {
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById('previewDP').src = reader.result; tempUser.dp = reader.result; };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+async function createFinalAccount() {
+    const name = document.getElementById("finalName").value.trim();
+    if(!name) return alert("❌ Please enter your name!");
+    
+    const email = `${tempUser.phone}@chatx.app`;
+    const btn = document.getElementById("createAccBtn");
+    btn.innerText = "Saving..."; btn.disabled = true;
 
     try {
-        // 1. Create Auth User
-        const userCred = await auth.createUserWithEmailAndPassword(tempUser.email, tempUser.pass);
-        let defaultDp = `https://ui-avatars.com/api/?name=${name.charAt(0)}&background=00e5ff&color=000&size=150`;
+        const cred = await auth.createUserWithEmailAndPassword(email, tempUser.pass);
         
-        // 2. Setup Database Entry (without awaiting to make it feel instantly fast)
-        db.collection("users").doc(userCred.user.uid).set({
-            uid: userCred.user.uid,
-            name: name,
-            email: tempUser.email,
-            dp: tempUser.dpBase64 || defaultDp,
-            about: "Available",
+        // Turant DB update
+        await db.collection("users").doc(cred.user.uid).set({
+            name: name, phone: tempUser.phone, dp: tempUser.dp || "", uid: cred.user.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // 3. SET LOCAL STORAGE & INSTANT REDIRECT
-        localStorage.setItem("currentUser", JSON.stringify({ uid: userCred.user.uid, email: userCred.user.email }));
-        window.location.href = "chat.html"; // Redirects immediately!
-
-    } catch (error) {
-        btn.innerText = "Complete Setup";
-        btn.disabled = false;
-        alert("Error creating account: " + error.message);
+        localStorage.setItem("currentUser", JSON.stringify({uid: cred.user.uid, phone: tempUser.phone}));
+        window.location.href = "chat.html";
+    } catch(e) { 
+        alert("❌ Setup Error: " + e.message); 
+        btn.innerText = "Complete Setup"; btn.disabled = false;
     }
 }
 
 async function loginUser() {
-    let email = document.getElementById("logEmail").value.trim();
-    let pass = document.getElementById("logPass").value;
-
-    if(email === "" || pass === "") return alert("Enter email and password!");
-
-    let btn = document.getElementById("loginBtn");
-    btn.innerText = "Logging in...";
-    btn.disabled = true;
-
-    try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        localStorage.setItem("currentUser", JSON.stringify({ uid: auth.currentUser.uid, email: auth.currentUser.email }));
-        window.location.href = "chat.html"; 
-    } catch (error) {
-        btn.innerText = "Secure Login";
-        btn.disabled = false;
-        alert("❌ Login Failed: Incorrect email or password.");
-    }
-}
-
-// ==========================================
-// 6. 🔥 SMART FORGOT PASSWORD
-// ==========================================
-async function forgotPassword() {
-    let email = document.getElementById("logEmail").value.trim().toLowerCase();
+    const phone = document.getElementById("logPhone").value.trim();
+    const pass = document.getElementById("logPass").value;
     
-    if(email === "") {
-        return alert("⚠️ Please type your registered Gmail in the email box first, then click 'Forgot Password'.");
-    }
+    if (!/^\d{10}$/.test(phone)) return alert("❌ Enter exactly 10 digits!");
+    if (!pass) return alert("❌ Enter password!");
+
+    const btn = document.getElementById("loginBtn");
+    btn.innerText = "Logging in..."; btn.disabled = true;
 
     try {
-        // PEHLE CHECK KARO KI ACCOUNT HAI YA NAHI
-        const userSnapshot = await db.collection("users").where("email", "==", email).get();
-        
-        if (userSnapshot.empty) {
-            return alert("❌ Ye account hamare database mein nahi hai. Kripya pehle Sign Up karein!");
-        }
-
-        // AGAR ACCOUNT HAI TOH LINK BHEJO
-        await auth.sendPasswordResetEmail(email);
-        alert(`✅ Secure password reset link sent to ${email}.\nApna Inbox aur Spam folder check karein.`);
-        
-    } catch (error) {
-        alert("Error: " + error.message);
+        await auth.signInWithEmailAndPassword(`${phone}@chatx.app`, pass);
+        localStorage.setItem("currentUser", JSON.stringify({ uid: auth.currentUser.uid, phone: phone }));
+        window.location.href = "chat.html";
+    } catch(e) { 
+        alert("❌ Invalid Phone Number or Password!"); 
+        btn.innerText = "Secure Login"; btn.disabled = false;
     }
 }
+
+function forgotPassword() {
+    alert("⚠️ Please create a new account or contact Admin.");
+        }
+            
